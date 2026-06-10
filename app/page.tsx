@@ -14,8 +14,8 @@ export default function Home() {
         <LandingPage />
       </div>
 
-      {/* Full-width gradient section - no padding at all */}
-      <div className="w-full bg-gradient-to-b from-blue-100 to-blue-200">
+      {/* Full-width section - let components handle their own backgrounds */}
+      <div className="w-full">
         <FeaturePage />
         <PersonasPage />
         <Partnership />

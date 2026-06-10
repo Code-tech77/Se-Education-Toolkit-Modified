@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion, useInView } from "framer-motion";
-import { Filter, Download, Search } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Filter, Download, Search, Sparkles, BookOpen } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import LabStep from "@/components/labs/LabStep";
@@ -24,8 +24,7 @@ const findMatchingOption = (options: string[], urlValue: string): string => {
 const LabsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const lastParamsRef = useRef<string>("");
 
   const areas = useMemo(() => getAreas(), []);
   const personas = useMemo(() => getPersonas(), []);
@@ -42,8 +41,6 @@ const LabsPage = () => {
     acceptanceCriteriaIds: [] as string[],
   });
 
-  const lastParamsRef = useRef<string>("");
-
   const selectedArea = filters.area;
   const topics = useMemo(() => getTopics(selectedArea), [selectedArea]);
 
@@ -57,6 +54,7 @@ const LabsPage = () => {
       const urlProblemId = searchParams.get("problemId") || "";
       const urlUserStoryId = searchParams.get("userStoryId") || "";
       const urlAcceptanceCriteriaIds = searchParams.get("acceptanceCriteriaIds")?.split(",") || [];
+      
       setFilters((prev) => {
         if (
           prev.area !== urlArea ||
@@ -71,6 +69,7 @@ const LabsPage = () => {
         }
         return prev;
       });
+      
       setHierarchySelection({
         problemId: urlProblemId,
         userStoryId: urlUserStoryId,
@@ -78,7 +77,6 @@ const LabsPage = () => {
       });
     }
   }, [searchParams, areas, topics, personas]);
-
 
   const selectedTopic = filters.topic;
   const explicitPersona = filters.persona;
@@ -181,66 +179,76 @@ const LabsPage = () => {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-4 py-10 sm:py-12 md:py-16">
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-blue-100 opacity-20" />
-        <div className="absolute bottom-20 -right-20 w-80 h-80 rounded-full bg-blue-100 opacity-20" />
-        <div className="absolute top-40 right-1/4 w-20 h-20 rounded-full bg-green-100 opacity-30" />
-      </div>
+    <main className="min-h-screen flex flex-col items-center relative overflow-hidden px-6 pt-32 pb-20 bg-slate-50/50">
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
-      <div ref={ref} className="w-full max-w-6xl mx-auto">
+      {/* Floating background blur accent */}
+      <div className="absolute top-1/4 -right-10 w-80 h-80 rounded-full bg-accent-sky/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -left-10 w-96 h-96 rounded-full bg-accent-indigo/5 blur-[130px] pointer-events-none" />
+
+      <div className="w-full max-w-6xl mx-auto relative z-10">
+        
+        {/* Title & Description Header */}
         <motion.div
-          className="text-center mb-8 sm:mb-10 md:mb-12"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: -10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
-            AI-Powered Labs
+          <span className="inline-flex items-center space-x-2 py-1 px-3.5 rounded-full bg-navy-900 border border-white/10 text-accent-sky text-2xs font-extrabold mb-4 tracking-wider uppercase">
+            <Sparkles size={12} className="text-accent-sky" />
+            <span>Interactive Sandbox</span>
+          </span>
+          
+          <h1 className="text-4xl sm:text-5xl font-black text-navy-900 tracking-tighter leading-none mb-4">
+            AI-Powered Workbench
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-3 sm:mt-4 max-w-2xl mx-auto px-2">
-            Select your area, topic, and persona to load a lab. Then choose a
-            problem and user story to provide context for Part 2.
+          
+          <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            Select your Area, Topic, and Mentor Persona to load the structured lab template. Then utilize the Case Study to build contextual test prompts.
           </p>
         </motion.div>
 
+        {/* 1. Filters Section: Rounded Card Grid */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-6 bg-white rounded-3xl border border-slate-200 shadow-premium mb-8"
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
           <SelectFilter
-            label="Area"
+            label="1. Target Area"
             options={areas}
             value={selectedArea}
             onChange={(value) => updateFilters({ area: value })}
-            icon={<Search size={18} />}
+            icon={<Search size={16} />}
           />
 
           <SelectFilter
-            label="Topic"
+            label="2. Exercise Topic"
             options={topics}
             value={selectedTopic}
             onChange={(value) => updateFilters({ topic: value })}
-            icon={<Search size={18} />}
+            icon={<Search size={16} />}
           />
 
           <SelectFilter
-            label="Persona"
+            label="3. Mentor Persona"
             options={personas}
             value={defaultPersona}
             onChange={(value) => updateFilters({ persona: value })}
-            icon={<Search size={18} />}
+            icon={<Search size={16} />}
           />
         </motion.div>
 
+        {/* 2. Hierarchy Cases Panel (only rendered if topic/area active) */}
         {selectedArea && selectedTopic && (
           <motion.div
-            className="mb-6 sm:mb-8"
+            className="mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <CaseStudyHierarchy
               problems={availableProblems}
@@ -251,58 +259,69 @@ const LabsPage = () => {
           </motion.div>
         )}
 
+        {/* 3. Empty State Card */}
         {!selectedLab && (
           <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-6 sm:p-8 text-center"
+            className="bg-white border border-slate-200 rounded-3xl p-12 text-center shadow-premium relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex justify-center mb-4 sm:mb-6">
-              <div className="p-4 sm:p-6 bg-blue-500/10 rounded-full">
-                <Filter size={48} className="sm:hidden text-blue-500" />
-                <Filter size={64} className="hidden sm:block text-blue-500" />
+            {/* Top gradient accent line */}
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-accent-blue via-accent-sky to-accent-indigo" />
+            
+            <div className="flex justify-center mb-6">
+              <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl text-slate-400">
+                <Filter size={40} className="text-accent-blue" />
               </div>
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-              Select Area and Topic to Get Started
+            <h3 className="text-xl font-extrabold text-navy-900 mb-2">
+              Workbench is Empty
             </h3>
-            <p className="text-sm sm:text-base text-gray-600">
-              Choose an area and topic to automatically load the first available
-              lab. You can customize the persona and case study afterwards.
+            <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed">
+              Please choose a Target Area and Exercise Topic from the control deck above to automatically load your interactive lab modules.
             </p>
           </motion.div>
         )}
 
+        {/* 4. Active Workbench Display */}
         {selectedLab && personaIntro && (
           <motion.div
-            className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 sm:p-5 md:p-6 shadow-sm"
+            className="space-y-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start md:items-center mb-4 sm:mb-6 gap-3 md:gap-4">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">
+            {/* Lab Card Header banner */}
+            <div className="bg-navy-950 text-white rounded-3xl p-8 border border-white/5 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="absolute inset-0 bg-grid-pattern-dark opacity-10 pointer-events-none" />
+              
+              <div className="relative z-10 space-y-2">
+                <span className="inline-flex items-center gap-1 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-accent-sky text-3xs font-extrabold uppercase tracking-widest">
+                  <BookOpen size={10} /> Active Lab Sheet
+                </span>
+                <h2 className="text-2xl font-black tracking-tight text-white">
                   {selectedLab.title}
                 </h2>
                 {selectedLab.description && (
-                  <p className="text-sm sm:text-base text-gray-600">
+                  <p className="text-slate-350 text-xs sm:text-sm leading-relaxed max-w-2xl font-medium">
                     {selectedLab.description}
                   </p>
                 )}
               </div>
+              
+              {/* Download CTA button */}
               <button
                 onClick={handleDownload}
-                className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors min-w-[140px] sm:min-w-[160px] md:min-w-[180px] text-sm sm:text-base whitespace-nowrap"
+                className="relative z-10 flex items-center justify-center gap-2 bg-white text-navy-950 hover:bg-accent-blue hover:text-white font-extrabold text-xs uppercase tracking-wider py-4 px-6.5 rounded-full transition-all shadow-lg hover:scale-103 cursor-pointer"
               >
-                <Download size={16} className="hidden sm:inline" />
-                <Download size={14} className="sm:hidden" />
-                Download Lab Sheet
+                <Download size={14} />
+                <span>Download Lab Sheet</span>
               </button>
             </div>
 
-            <div className="space-y-6 sm:space-y-8">
+            {/* List of Steps */}
+            <div className="space-y-8">
               {selectedLab.steps.map((step, i) => (
                 <LabStep
                   key={i}

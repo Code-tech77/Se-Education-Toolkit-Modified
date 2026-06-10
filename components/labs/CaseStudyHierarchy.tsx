@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronRight, CheckCircle, Circle } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Circle, Eye, BookOpen, Layers } from "lucide-react";
 import { Problem, TopicHierarchy } from "@/data";
 
 interface CaseStudyHierarchyProps {
@@ -31,6 +31,7 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   const userStoryLabel = hierarchy.labels.userStory ?? "User Story";
   const userStoriesLabel = `${userStoryLabel}s`;
   const acLabel = hierarchy.labels.acceptanceCriteria ?? "Acceptance Criteria";
+  
   const [expandedProblems, setExpandedProblems] = useState<Set<string>>(new Set());
   const [expandedUserStories, setExpandedUserStories] = useState<Set<string>>(new Set());
   const [selectedProblemId, setSelectedProblemId] = useState<string>("");
@@ -42,6 +43,14 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
       setSelectedProblemId(initialSelection.problemId);
       setSelectedUserStoryId(initialSelection.userStoryId);
       setSelectedAcceptanceCriteriaIds(initialSelection.acceptanceCriteriaIds);
+      
+      // Auto-expand initial selections
+      if (initialSelection.problemId) {
+        setExpandedProblems(new Set([initialSelection.problemId]));
+      }
+      if (initialSelection.userStoryId) {
+        setExpandedUserStories(new Set([initialSelection.userStoryId]));
+      }
     }
   }, [initialSelection]);
 
@@ -68,10 +77,12 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
   };
 
   const selectProblem = (problemId: string) => {
-    setSelectedProblemId(problemId);
+    const isDeselect = selectedProblemId === problemId;
+    const newProblemId = isDeselect ? "" : problemId;
+    setSelectedProblemId(newProblemId);
     setSelectedUserStoryId("");
     setSelectedAcceptanceCriteriaIds([]);
-    onSelectionChange({ problemId, userStoryId: "", acceptanceCriteriaIds: [] });
+    onSelectionChange({ problemId: newProblemId, userStoryId: "", acceptanceCriteriaIds: [] });
   };
 
   const selectUserStory = (userStoryId: string) => {
@@ -97,221 +108,277 @@ const CaseStudyHierarchy: React.FC<CaseStudyHierarchyProps> = ({
 
   if (problems.length === 0) {
     return (
-      <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4">
-        <p className="text-gray-600">Select area and topic first to view problems.</p>
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+        <p className="text-slate-500 text-sm font-semibold">Select an area and topic above to view case study scenarios.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {/* Hierarchy Panel */}
-      <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Select a Problem</h3>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      {/* 1. Hierarchy Selection Panel */}
+      <div className="lg:col-span-7 bg-white rounded-3xl p-6 shadow-premium border border-slate-200">
+        <h3 className="text-base font-black text-navy-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <Layers size={18} className="text-accent-blue" />
+          <span>Select Exercise Context</span>
+        </h3>
 
-        <div className="space-y-2">
-          {problems.map((p) => (
-            <div key={p.id} className="border border-gray-200 rounded-lg">
-              <button
-                onClick={() => toggleProblem(p.id)}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  {selectedProblemId === p.id ? (
-                    <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
-                  ) : (
-                    <Circle size={16} className="text-gray-400 flex-shrink-0" />
-                  )}
-                  <span className="font-medium text-left text-sm truncate">{p.name}</span>
-                </div>
-                {expandedProblems.has(p.id) ? (
-                  <ChevronDown size={16} className="flex-shrink-0 ml-2" />
-                ) : (
-                  <ChevronRight size={16} className="flex-shrink-0 ml-2" />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {expandedProblems.has(p.id) && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-3 border-t border-gray-100">
-                      <p className="text-sm text-gray-700 mb-2">{p.statement}</p>
-                      <button
-                        onClick={() => selectProblem(p.id)}
-                        className={`w-full text-left p-2 rounded text-sm mb-3 ${
-                          selectedProblemId === p.id
-                            ? "bg-blue-100 text-blue-800"
-                            : "hover:bg-gray-100"
-                        } transition-colors`}
-                      >
-                        {selectedProblemId === p.id ? "Deselect" : "Select this problem"}
-                      </button>
-
-                      {/* Sub-levels — only shown once this problem is selected, and only when hierarchy requires them */}
-                      {selectedProblemId === p.id && showUserStory && (
-                        <div className="border border-gray-200 rounded-lg">
-                          <div className="p-2 border-b border-gray-100 bg-gray-50 rounded-t-lg">
-                            <h4 className="font-medium text-gray-700 text-sm">{userStoriesLabel}</h4>
-                          </div>
-                          {p.userStories.map((us) => (
-                            <div key={us.id} className="border-t border-gray-100 first:border-t-0">
-                              <button
-                                onClick={() => toggleUserStory(us.id)}
-                                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
-                              >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  {selectedUserStoryId === us.id ? (
-                                    <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
-                                  ) : (
-                                    <Circle size={14} className="text-gray-400 flex-shrink-0" />
-                                  )}
-                                  <span className="text-left text-sm">{us.statement}</span>
-                                </div>
-                                {expandedUserStories.has(us.id) ? (
-                                  <ChevronDown size={14} className="flex-shrink-0 ml-2" />
-                                ) : (
-                                  <ChevronRight size={14} className="flex-shrink-0 ml-2" />
-                                )}
-                              </button>
-
-                              <AnimatePresence>
-                                {expandedUserStories.has(us.id) && (
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="overflow-hidden"
-                                  >
-                                    <div className="p-3 border-t border-gray-100">
-                                      {us.description && (
-                                        <p className="text-sm text-gray-600 mb-2">{us.description}</p>
-                                      )}
-                                      <button
-                                        onClick={() => selectUserStory(us.id)}
-                                        className={`w-full text-left p-2 rounded text-sm mb-2 ${
-                                          selectedUserStoryId === us.id
-                                            ? "bg-blue-100 text-blue-800"
-                                            : "hover:bg-gray-100"
-                                        } transition-colors`}
-                                      >
-                                        {selectedUserStoryId === us.id ? "Deselect" : "Select this user story"}
-                                      </button>
-
-                                      {showAcceptanceCriteria && <div className="space-y-1">
-                                        <h5 className="text-xs font-medium text-gray-700">
-                                          {acLabel}:
-                                        </h5>
-                                        {us.acceptanceCriteria.map((ac) => (
-                                          <button
-                                            key={ac.id}
-                                            onClick={() => toggleAcceptanceCriteria(ac.id, us.id)}
-                                            className={`w-full text-left p-2 rounded text-xs flex items-start gap-2 ${
-                                              selectedAcceptanceCriteriaIds.includes(ac.id)
-                                                ? "bg-green-100 text-green-800"
-                                                : "hover:bg-gray-100"
-                                            } transition-colors`}
-                                          >
-                                            <div className="mt-0.5 flex-shrink-0">
-                                              {selectedAcceptanceCriteriaIds.includes(ac.id) ? (
-                                                <CheckCircle size={12} className="text-green-600" />
-                                              ) : (
-                                                <Circle size={12} className="text-gray-400" />
-                                              )}
-                                            </div>
-                                            <span>{ac.criteria}</span>
-                                          </button>
-                                        ))}
-                                      </div>}
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          ))}
-                        </div>
+        <div className="space-y-3.5">
+          {problems.map((p) => {
+            const isProblemExpanded = expandedProblems.has(p.id);
+            const isProblemSelected = selectedProblemId === p.id;
+            return (
+              <div key={p.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <button
+                  onClick={() => toggleProblem(p.id)}
+                  className="w-full flex items-center justify-between p-4 text-left font-bold text-sm text-navy-900 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectProblem(p.id);
+                      }}
+                      className="cursor-pointer flex-shrink-0"
+                    >
+                      {isProblemSelected ? (
+                        <CheckCircle2 size={18} className="text-emerald-500" />
+                      ) : (
+                        <Circle size={18} className="text-slate-400 hover:text-navy-900 transition-colors" />
                       )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Preview Panel */}
-      <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-xl p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-
-        <div className="space-y-4">
-          {selectedProblem && (
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Problem</h4>
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-gray-700 mb-2">{selectedProblem.statement}</p>
-                {selectedProblem.context && (
-                  <p className="text-xs text-gray-500 mb-2">Context: {selectedProblem.context}</p>
-                )}
-                {selectedProblem.personas.length > 0 && (
-                  <div className="border-t border-blue-200 pt-2 mt-2">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Personas:</p>
-                    {selectedProblem.personas.map((persona) => (
-                      <div key={persona.name} className="text-xs text-gray-600 mb-1">
-                        <span className="font-medium">{persona.name}</span> ({persona.role}):{" "}
-                        {persona.description}
-                      </div>
-                    ))}
+                    </span>
+                    <span className="truncate font-extrabold pr-2">{p.name}</span>
                   </div>
+                  <div className="text-slate-400 flex items-center gap-1.5 flex-shrink-0">
+                    <span className="text-3xs font-black tracking-widest uppercase hidden sm:inline">
+                      {isProblemExpanded ? "Hide" : "Expand"}
+                    </span>
+                    {isProblemExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  </div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isProblemExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden bg-white border-t border-slate-150"
+                    >
+                      <div className="p-4 space-y-4">
+                        <div>
+                          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1">Scenario Statement</span>
+                          <p className="text-xs sm:text-sm text-slate-650 leading-relaxed font-medium">{p.statement}</p>
+                        </div>
+                        
+                        <button
+                          onClick={() => selectProblem(p.id)}
+                          className={`w-full text-center py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                            isProblemSelected
+                              ? "bg-emerald-550 text-white shadow-md hover:bg-emerald-600"
+                              : "bg-navy-900 text-white hover:bg-navy-800"
+                          }`}
+                        >
+                          {isProblemSelected ? "✓ Scenario Selected" : "Select Scenario"}
+                        </button>
+
+                        {/* Sub-levels (User Stories) */}
+                        {isProblemSelected && showUserStory && (
+                          <div className="border border-slate-200 rounded-2xl overflow-hidden mt-4">
+                            <div className="p-3 bg-slate-50 border-b border-slate-150">
+                              <h4 className="font-extrabold text-navy-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                <BookOpen size={14} className="text-accent-blue" />
+                                {userStoriesLabel}
+                              </h4>
+                            </div>
+                            
+                            <div className="divide-y divide-slate-150">
+                              {p.userStories.map((us) => {
+                                const isUSExpanded = expandedUserStories.has(us.id);
+                                const isUSSelected = selectedUserStoryId === us.id;
+                                return (
+                                  <div key={us.id} className="bg-white">
+                                    <button
+                                      onClick={() => toggleUserStory(us.id)}
+                                      className="w-full flex items-center justify-between p-3.5 text-left font-bold text-xs text-navy-900 hover:bg-slate-50/50 cursor-pointer"
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <span 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            selectUserStory(us.id);
+                                          }}
+                                          className="cursor-pointer flex-shrink-0"
+                                        >
+                                          {isUSSelected ? (
+                                            <CheckCircle2 size={16} className="text-emerald-500" />
+                                          ) : (
+                                            <Circle size={16} className="text-slate-400 hover:text-navy-900" />
+                                          )}
+                                        </span>
+                                        <span className="truncate pr-2">{us.statement}</span>
+                                      </div>
+                                      {isUSExpanded ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}
+                                    </button>
+
+                                    <AnimatePresence initial={false}>
+                                      {isUSExpanded && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: "auto", opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.25 }}
+                                          className="overflow-hidden bg-slate-50/50 border-t border-slate-100"
+                                        >
+                                          <div className="p-4 space-y-4">
+                                            {us.description && (
+                                              <div>
+                                                <span className="text-[9px] font-black text-slate-400 tracking-widest uppercase block mb-1">Details</span>
+                                                <p className="text-xs text-slate-600 leading-relaxed">{us.description}</p>
+                                              </div>
+                                            )}
+                                            
+                                            <button
+                                              onClick={() => selectUserStory(us.id)}
+                                              className={`w-full py-2 px-3 rounded-lg text-3xs font-black uppercase tracking-wider transition-colors cursor-pointer ${
+                                                isUSSelected
+                                                  ? "bg-emerald-555 text-white hover:bg-emerald-600"
+                                                  : "bg-slate-200 text-navy-900 hover:bg-slate-300"
+                                              }`}
+                                            >
+                                              {isUSSelected ? "✓ User Story Selected" : "Select User Story"}
+                                            </button>
+
+                                            {/* Acceptance Criteria */}
+                                            {showAcceptanceCriteria && (
+                                              <div className="space-y-2 pt-2 border-t border-slate-150">
+                                                <h5 className="text-[10px] font-black text-slate-400 tracking-widest uppercase">
+                                                  Select {acLabel}:
+                                                </h5>
+                                                <div className="space-y-1">
+                                                  {us.acceptanceCriteria.map((ac) => {
+                                                    const isACSelected = selectedAcceptanceCriteriaIds.includes(ac.id);
+                                                    return (
+                                                      <button
+                                                        key={ac.id}
+                                                        onClick={() => toggleAcceptanceCriteria(ac.id, us.id)}
+                                                        className={`w-full text-left p-3 rounded-xl text-xs flex items-start gap-2.5 font-bold transition-all cursor-pointer ${
+                                                          isACSelected
+                                                            ? "bg-slate-900 text-white shadow-sm"
+                                                            : "bg-white border border-slate-200 text-navy-900 hover:border-slate-300"
+                                                        }`}
+                                                      >
+                                                        <div className="mt-0.5 flex-shrink-0">
+                                                          {isACSelected ? (
+                                                            <CheckCircle2 size={14} className="text-accent-sky" />
+                                                          ) : (
+                                                            <Circle size={14} className="text-slate-350" />
+                                                          )}
+                                                        </div>
+                                                        <span className="leading-tight">{ac.criteria}</span>
+                                                      </button>
+                                                    );
+                                                  })}
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 2. Preview Panel */}
+      <div className="lg:col-span-5 bg-navy-950 text-white rounded-3xl p-6 shadow-2xl border border-white/5 relative overflow-hidden self-stretch flex flex-col">
+        {/* Subtle grid pattern inside dark preview */}
+        <div className="absolute inset-0 bg-grid-pattern-dark opacity-10 pointer-events-none" />
+
+        <h3 className="text-base font-black text-white uppercase tracking-wider mb-5 flex items-center gap-2 relative z-10">
+          <Eye size={18} className="text-accent-sky" />
+          <span>Active Context Preview</span>
+        </h3>
+
+        <div className="space-y-5 flex-1 relative z-10">
+          {selectedProblem ? (
+            <div className="space-y-4">
+              
+              {/* Problem Statement Card */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4.5">
+                <span className="text-[9px] font-black text-accent-sky tracking-widest uppercase block mb-1">Scenario</span>
+                <h4 className="font-extrabold text-sm text-white mb-2">{selectedProblem.name}</h4>
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">{selectedProblem.statement}</p>
+                {selectedProblem.context && (
+                  <p className="text-3xs text-slate-400 font-mono mt-3 pt-3 border-t border-white/5">CONTEXT: {selectedProblem.context}</p>
                 )}
               </div>
-            </div>
-          )}
 
-          {selectedUserStory && showUserStory && (
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">{userStoryLabel}</h4>
-              <div className="bg-green-50 p-3 rounded-lg">
-                <p className="text-sm font-medium text-gray-800 mb-1">{selectedUserStory.statement}</p>
-                {selectedUserStory.description && (
-                  <p className="text-sm text-gray-700">{selectedUserStory.description}</p>
-                )}
-              </div>
-            </div>
-          )}
+              {/* User Story Card */}
+              {selectedUserStory && showUserStory && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4.5"
+                >
+                  <span className="text-[9px] font-black text-accent-sky tracking-widest uppercase block mb-1">{userStoryLabel}</span>
+                  <p className="text-xs text-white font-extrabold mb-1">"{selectedUserStory.statement}"</p>
+                  {selectedUserStory.description && (
+                    <p className="text-2xs text-slate-350 leading-relaxed mt-2">{selectedUserStory.description}</p>
+                  )}
+                </motion.div>
+              )}
 
-          {selectedAcceptanceCriteriaIds.length > 0 && showAcceptanceCriteria && (
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">
-                {acLabel} ({selectedAcceptanceCriteriaIds.length} selected)
-              </h4>
-              <div className="bg-purple-50 p-3 rounded-lg space-y-2">
-                {selectedAcceptanceCriteriaIds.map((id) => {
-                  const criteria = selectedUserStory?.acceptanceCriteria.find((ac) => ac.id === id);
-                  return criteria ? (
-                    <div key={id} className="text-sm text-gray-700 flex items-start gap-2">
-                      <CheckCircle size={14} className="text-purple-600 mt-0.5 flex-shrink-0" />
-                      <span>{criteria.criteria}</span>
-                    </div>
-                  ) : null;
-                })}
-              </div>
+              {/* Acceptance Criteria Card */}
+              {selectedAcceptanceCriteriaIds.length > 0 && showAcceptanceCriteria && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4.5"
+                >
+                  <span className="text-[9px] font-black text-accent-sky tracking-widest uppercase block mb-3">
+                    Selected {acLabel} ({selectedAcceptanceCriteriaIds.length})
+                  </span>
+                  <div className="space-y-2">
+                    {selectedAcceptanceCriteriaIds.map((id) => {
+                      const criteria = selectedUserStory?.acceptanceCriteria.find((ac) => ac.id === id);
+                      return criteria ? (
+                        <div key={id} className="text-xs text-slate-200 flex items-start gap-2 font-semibold">
+                          <CheckCircle2 size={12} className="text-accent-sky mt-0.5 flex-shrink-0" />
+                          <span>{criteria.criteria}</span>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </motion.div>
+              )}
+              
             </div>
-          )}
-
-          {!selectedProblem && (
-            <div className="text-center text-gray-500 py-8">
-              <p>Select a problem to preview content</p>
+          ) : (
+            <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center p-6 border border-white/5 rounded-2xl">
+              <span className="text-3xl mb-3">📥</span>
+              <p className="text-xs text-slate-400 font-bold max-w-xs leading-relaxed">
+                Choose and select a scenario from the sidebar to preview the loaded workspace context.
+              </p>
             </div>
           )}
         </div>
       </div>
+      
     </div>
   );
 };

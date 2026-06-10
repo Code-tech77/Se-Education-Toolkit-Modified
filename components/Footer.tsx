@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Github, Mail, Twitter, ExternalLink } from "lucide-react";
 
 const Footer = () => {
@@ -11,7 +11,7 @@ const Footer = () => {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Labs", href: "/labs" },
-    { name: "Contact", href: "/contact" },
+    { name: "Talks", href: "/talks" },
   ];
 
   const socialLinks = [
@@ -33,23 +33,29 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full bg-gradient-to-b from-white/10 to-white/30 backdrop-blur-sm border-t border-white/20 mt-16 py-8 md:py-12">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10">
+    <footer className="w-full bg-navy-950 border-t border-white/5 pt-20 pb-10 relative overflow-hidden">
+      {/* Grid decorative overlay */}
+      <div className="absolute inset-0 bg-grid-pattern-dark opacity-10 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 pb-16">
+          
           {/* Logo & Description */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="space-y-3 md:space-y-4"
+            className="md:col-span-5 lg:col-span-4 space-y-6"
           >
-            <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-green-400 bg-clip-text text-transparent">
-              SE Toolkit
-            </h3>
-            <p className="text-sm text-gray-600 max-w-xs">
-              Transforming software engineering education with AI-powered
-              interactive learning experiences.
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">🚀</span>
+              <h3 className="text-xl font-extrabold text-white tracking-tight uppercase">
+                SE TOOLKIT
+              </h3>
+            </div>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              Transforming software engineering education with AI-powered interactive learning experiences. Open source and built for classrooms.
             </p>
           </motion.div>
 
@@ -59,20 +65,23 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
-            className="space-y-3 md:space-y-4"
+            className="md:col-span-3 lg:col-span-4 space-y-6"
           >
-            <h4 className="font-semibold text-gray-800">Quick Links</h4>
-            <ul className="space-y-2">
+            <h4 className="font-extrabold text-white uppercase tracking-wider text-xs">Navigation</h4>
+            <ul className="space-y-3.5">
               {footerLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-blue-500 transition-colors flex items-center gap-1 group"
+                    className="text-slate-400 hover:text-accent-sky text-sm transition-colors flex items-center gap-1.5 group w-fit"
                   >
-                    <span>{link.name}</span>
+                    <span className="relative font-medium">
+                      {link.name}
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-[1.5px] bg-accent-sky transition-all group-hover:w-full"></span>
+                    </span>
                     <ExternalLink
-                      size={14}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      size={12}
+                      className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                     />
                   </Link>
                 </li>
@@ -86,18 +95,19 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="space-y-3 md:space-y-4 sm:col-span-2 md:col-span-1"
+            className="md:col-span-4 lg:col-span-4 space-y-6"
           >
-            <h4 className="font-semibold text-gray-800">Connect</h4>
-            <div className="flex gap-4">
+            <h4 className="font-extrabold text-white uppercase tracking-wider text-xs">Connect</h4>
+            <div className="flex gap-3.5">
               {socialLinks.map((link) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 bg-white rounded-full text-gray-600 hover:text-blue-500 hover:shadow-md transition-all"
-                  whileHover={{ y: -5 }}
+                  className="w-11 h-11 rounded-xl bg-navy-900 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-accent-blue hover:border-accent-blue transition-all duration-300 shadow-md"
+                  whileHover={{ y: -4, scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   aria-label={link.name}
                 >
                   {link.icon}
@@ -113,21 +123,21 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           viewport={{ once: true }}
-          className="border-t border-gray-200 mt-8 md:mt-10 pt-6 flex flex-col md:flex-row justify-between items-center"
+          className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
         >
-          <p className="text-xs text-gray-500 text-center md:text-left">
-            © {currentYear} SE Toolkit. All rights reserved.
+          <p className="text-xs text-slate-500 text-center md:text-left">
+            © {currentYear} SE Toolkit. All rights reserved. Developed at Brunel University London.
           </p>
-          <div className="flex gap-4 mt-4 md:mt-0">
+          <div className="flex gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-gray-500 hover:text-blue-500"
+              className="text-xs text-slate-500 hover:text-white transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
-              className="text-xs text-gray-500 hover:text-blue-500"
+              className="text-xs text-slate-500 hover:text-white transition-colors"
             >
               Terms of Service
             </Link>
