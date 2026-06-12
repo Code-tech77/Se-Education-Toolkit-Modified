@@ -11,7 +11,7 @@ const Footer = () => {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Labs", href: "/labs" },
-    { name: "Talks", href: "/talks" },
+    { name: "AI Chat", href: "/chat" },
   ];
 
   const socialLinks = [
