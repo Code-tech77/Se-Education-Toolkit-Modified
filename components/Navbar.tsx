@@ -12,7 +12,7 @@ const navLinks = [
   { name: "Personas", href: "/#personas" },
   { name: "Labs", href: "/labs" },
   { name: "AI Chat", href: "/chat" },
-  { name: "Assessment", href: "/#assessments" },
+  { name: "Assessment", href: "/assessment" },
   { name: "About", href: "/about" },
   { name: "Talks", href: "/talks" },
 ];
