@@ -11,7 +11,6 @@ const Footer = () => {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Labs", href: "/labs" },
-    { name: "AI Chat", href: "/chat" },
     { name: "Assessment", href: "/assessment" },
   ];
 
@@ -40,7 +39,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 pb-16">
-          
+
           {/* Logo & Description */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -11,7 +11,6 @@ const navLinks = [
   { name: "Features", href: "/#features" },
   { name: "Personas", href: "/#personas" },
   { name: "Labs", href: "/labs" },
-  { name: "AI Chat", href: "/chat" },
   { name: "Assessment", href: "/assessment" },
   { name: "About", href: "/about" },
   { name: "Talks", href: "/talks" },
@@ -50,15 +49,14 @@ const Navbar = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? "glass shadow-premium py-3 bg-white/80"
-          : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled
+        ? "glass shadow-premium py-3 bg-white/80"
+        : "bg-transparent py-5"
+        }`}
     >
       <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
         {/* Logo Section */}
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="flex items-center space-x-3 text-xl font-bold cursor-pointer"
@@ -85,7 +83,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:block">
-          <ul 
+          <ul
             className="flex items-center space-x-1"
             onMouseLeave={() => setHoveredLink(null)}
           >
@@ -95,11 +93,10 @@ const Navbar = () => {
                 <li key={link.name} className="relative">
                   <Link
                     href={link.href}
-                    className={`relative px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 block z-10 ${
-                      active 
-                        ? "text-accent-blue" 
-                        : "text-navy-700 hover:text-navy-900"
-                    }`}
+                    className={`relative px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 block z-10 ${active
+                      ? "text-accent-blue"
+                      : "text-navy-700 hover:text-navy-900"
+                      }`}
                     onMouseEnter={() => setHoveredLink(link.name)}
                   >
                     {link.name}
@@ -152,7 +149,7 @@ const Navbar = () => {
               {navLinks.map((link, idx) => {
                 const active = isLinkActive(link.href);
                 return (
-                  <motion.li 
+                  <motion.li
                     key={link.name}
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -160,9 +157,8 @@ const Navbar = () => {
                   >
                     <Link
                       href={link.href}
-                      className={`block text-lg py-2 transition-colors ${
-                        active ? "text-accent-light" : "text-slate-300 hover:text-white"
-                      }`}
+                      className={`block text-lg py-2 transition-colors ${active ? "text-accent-light" : "text-slate-300 hover:text-white"
+                        }`}
                       onClick={toggleMenu}
                     >
                       {link.name}
