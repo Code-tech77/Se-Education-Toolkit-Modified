@@ -47,34 +47,26 @@ const ChatWidget = () => {
     setMessages(updatedMessages);
     setIsLoading(true);
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ messages: updatedMessages }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw {
-          message: data.error || "Failed to contact chat server.",
-          isConfigError: data.isConfigError || false,
-        };
+    // Simple local AI chatbot logic
+    setTimeout(() => {
+      let reply = "";
+      const text = userText.toLowerCase();
+      
+      if (text.includes("uml") || text.includes("diagram") || text.includes("use case") || text.includes("class") || text.includes("activity")) {
+        reply = "UML (Unified Modeling Language) helps visualize system architecture. We cover Use Case, Class, and Activity diagrams in our labs.";
+      } else if (text.includes("requirement") || text.includes("user story") || text.includes("acceptance criteria") || text.includes("agile")) {
+        reply = "Requirements engineering involves gathering user needs. A user story follows 'As a [role], I want [feature] so that [benefit]'. Acceptance criteria define when it's done.";
+      } else if (text.includes("lab") || text.includes("step") || text.includes("practice")) {
+        reply = "Our labs guide you step-by-step through Software Engineering concepts. Check the Labs section for hands-on practice!";
+      } else if (text.includes("hello") || text.includes("hi") || text.includes("hey")) {
+        reply = "Hello! How can I assist you with your Software Engineering studies today?";
+      } else {
+        reply = "I am a simple SE Toolkit Assistant. I can only answer questions related to UML, requirements engineering, or our labs. Please ask a related question!";
       }
-
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
-    } catch (err: any) {
-      console.error("Chat error:", err);
-      setApiError({
-        message: err.message || "An unexpected network error occurred.",
-        isConfigError: err.isConfigError,
-      });
-    } finally {
+      
+      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
       setIsLoading(false);
-    }
+    }, 800);
   };
 
   const clearChat = () => {
@@ -108,7 +100,7 @@ const ChatWidget = () => {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm uppercase tracking-wider">SE AI Helper</h3>
-                  <span className="text-[9px] font-mono text-slate-400">READY // ONLINE</span>
+                  <span className="text-[9px] font-mono text-slate-200">READY // ONLINE</span>
                 </div>
               </div>
               
@@ -116,13 +108,13 @@ const ChatWidget = () => {
                 <button
                   onClick={clearChat}
                   title="Reset Conversation"
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 hover:text-white transition-colors cursor-pointer"
                 >
                   <Trash2 size={16} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-200 hover:text-white transition-colors cursor-pointer"
                 >
                   <X size={18} />
                 </button>
@@ -172,9 +164,9 @@ const ChatWidget = () => {
                     🚀
                   </div>
                   <div className="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-premium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
               )}
@@ -191,10 +183,10 @@ const ChatWidget = () => {
                   
                   {apiError.isConfigError && (
                     <div className="bg-white/80 p-2.5 rounded-xl border border-red-200 mt-2">
-                      <p className="text-[10px] font-black tracking-widest text-slate-450 uppercase mb-1">Developer Quickfix:</p>
-                      <ol className="list-decimal pl-4 text-3xs font-mono space-y-1 text-slate-650">
-                        <li>Create a <code className="bg-slate-100 px-1 py-0.5 rounded">.env.local</code> in project root</li>
-                        <li>Add <code className="bg-slate-100 px-1 py-0.5 rounded">AQ.Ab8RN6I3N569NtNp3GF_trMQIxfkEdBXklMPe-1M0ku7-yoT-g</code></li>
+                      <p className="text-[10px] font-black tracking-widest text-slate-600 uppercase mb-1">Developer Quickfix:</p>
+                      <ol className="list-decimal pl-4 text-3xs font-mono space-y-1 text-slate-800">
+                        <li>Create a <code className="bg-slate-200 px-1 py-0.5 rounded">.env.local</code> in project root</li>
+                        <li>Add <code className="bg-slate-200 px-1 py-0.5 rounded">AQ.Ab8RN6I3N569NtNp3GF_trMQIxfkEdBXklMPe-1M0ku7-yoT-g</code></li>
                         <li>Restart your dev server terminal</li>
                       </ol>
                     </div>
@@ -213,7 +205,7 @@ const ChatWidget = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask about user stories, UML..."
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-navy-900 focus:outline-none focus:border-slate-350 focus:bg-white transition-all"
+                className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-navy-900 focus:outline-none focus:border-slate-400 focus:bg-white transition-all placeholder-slate-500"
                 disabled={isLoading}
               />
               <button

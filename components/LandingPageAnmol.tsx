@@ -76,7 +76,7 @@ const LandingPageA: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl mb-8 leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-slate-100 max-w-2xl mb-8 leading-relaxed"
             >
               An open-source toolkit for SE education using Large Language Models. 
               Master Requirements Engineering and UML design through interactive lab exercises with instant, AI-guided feedback.
@@ -112,15 +112,15 @@ const LandingPageA: React.FC = () => {
             >
               <div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-white">100%</p>
-                <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Open Source</p>
+                <p className="text-xs text-slate-200 mt-1 uppercase tracking-wider font-semibold">Open Source</p>
               </div>
               <div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-white">8+</p>
-                <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Lab Modules</p>
+                <p className="text-xs text-slate-200 mt-1 uppercase tracking-wider font-semibold">Lab Modules</p>
               </div>
               <div>
                 <p className="text-2xl sm:text-3xl font-extrabold text-white">3</p>
-                <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">AI Mentors</p>
+                <p className="text-xs text-slate-200 mt-1 uppercase tracking-wider font-semibold">AI Mentors</p>
               </div>
             </motion.div>
           </div>
@@ -138,7 +138,7 @@ const LandingPageA: React.FC = () => {
               <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center space-x-2">
                   <Terminal className="text-accent-sky w-5 h-5" />
-                  <span className="text-xs font-mono text-slate-400">AI-WORKBENCH // USER_STORY</span>
+                  <span className="text-xs font-mono text-slate-200">AI-WORKBENCH // USER_STORY</span>
                 </div>
                 <div className="flex space-x-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -157,7 +157,7 @@ const LandingPageA: React.FC = () => {
                   className="bg-navy-800/95 border border-white/10 rounded-xl p-4 shadow-lg w-4/5 z-10 self-start"
                 >
                   <p className="text-2xs font-semibold text-accent-indigo uppercase tracking-wider mb-1">Step 1: User Story</p>
-                  <p className="text-xs text-slate-200 italic font-medium">"As a user, I want to filter lab exercises by topic..."</p>
+                  <p className="text-xs text-white italic font-medium">"As a user, I want to filter lab exercises by topic..."</p>
                 </motion.div>
 
                 {/* Connecting Line (SVG Animated Path) */}
@@ -200,14 +200,14 @@ const LandingPageA: React.FC = () => {
                       <CheckCircle size={10} /> Passed
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300">"Your acceptance criteria captures the constraints correctly. Great structure!"</p>
+                  <p className="text-xs text-slate-100">"Your acceptance criteria captures the constraints correctly. Great structure!"</p>
                 </motion.div>
               </div>
 
               {/* Footer Panel */}
               <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                <span className="text-2xs font-mono text-slate-500">LLM MODEL: GEMINI-2.5-PRO</span>
-                <span className="text-2xs font-mono text-slate-500">UML CONTEXT: ENABLED</span>
+                <span className="text-2xs font-mono text-slate-300">LLM MODEL: GEMINI-2.5-PRO</span>
+                <span className="text-2xs font-mono text-slate-300">UML CONTEXT: ENABLED</span>
               </div>
             </div>
           </motion.div>
